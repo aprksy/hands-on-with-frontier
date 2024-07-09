@@ -43,6 +43,8 @@ int main(int argc, char *argv[]){
     --------------------------------------------------------------- */
     start = omp_get_wtime();
 
+    // this is the original code (serial)
+    /*
     for(int row=0; row<N; row++){
         for(int col=0; col<N; col++){
             for(int k=0; k<N; k++){
@@ -52,6 +54,45 @@ int main(int argc, char *argv[]){
 
             }
         }
+    }
+    */
+
+    // optimize outer-most loop
+    /*
+    #pragma omp target map(to:A[:N*N],B[:N*N]) map(tofrom:C[:N*N])
+    {
+
+    #pragma omp teams distribute parallel for
+    for(int row=0; row<N; row++){
+        for(int col=0; col<N; col++){
+            for(int k=0; k<N; k++){
+
+                int index = row * N + col;
+                C[index] = C[index] + A[row * N + k] * B[k * N + col];
+
+            }
+        }
+    }
+
+    }
+    */
+
+    // optimize outer-most and middle loop using collapse(2)
+    #pragma omp target map(to:A[:N*N],B[:N*N]) map(tofrom:C[:N*N])
+    {
+
+    #pragma omp teams distribute parallel for collapse(2)
+    for(int row=0; row<N; row++){
+        for(int col=0; col<N; col++){
+            for(int k=0; k<N; k++){
+
+                int index = row * N + col;
+                C[index] = C[index] + A[row * N + k] * B[k * N + col];
+
+            }
+        }
+    }
+
     }
 
     stop = omp_get_wtime();
