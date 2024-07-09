@@ -78,10 +78,12 @@ int main(int argc, char *argv[])
 	/*       2nd and 3rd option.                                 */
 	/*************************************************************/
 
+	hipblasStatus_t status = hipblasDgemm(handle, HIPBLAS_OP_N, HIPBLAS_OP_N, N, N, N, &alpha, d_A, N, d_B, N, &beta, d_C, N);
 
-
-
-
+	if (status != HIPBLAS_STATUS_SUCCESS) {
+		printf("hipblas error: %d\n", status);
+		return EXIT_FAILURE;
+	}
 
 	/* Copy values of d_C back from GPU and compare with values calculated on CPU ------*/
 
