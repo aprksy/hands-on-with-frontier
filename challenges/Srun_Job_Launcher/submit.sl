@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH -A TRN###
-#SBATCH -J srun_<enter your name here>
+#SBATCH -A TRN025
+#SBATCH -J srun_aprksy
 #SBATCH -o %x-%j.out
 #SBATCH -t 10:00
 #SBATCH -p batch
